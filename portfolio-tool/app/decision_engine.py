@@ -13,6 +13,7 @@ from datetime import datetime
 
 from app.config import AppConfig
 from app.data.contracts import (
+    DataQualityWarning,
     DecisionLogEntry,
     ExecutionSignal,
     Holding,
@@ -43,6 +44,7 @@ class DecisionBundle:
     momentum: list[MomentumSignal]
     throttle: ThrottleState
     execution: list[ExecutionSignal]
+    recon_warnings: list[DataQualityWarning] = field(default_factory=list)
     decision_log: list[DecisionLogEntry] = field(default_factory=list)
 
 
@@ -125,7 +127,7 @@ def run_decision_engine(
     cfg: AppConfig, accounts: list, holdings: list[Holding], run_id: str, ts: datetime
 ) -> DecisionBundle:
     exposure = compute_exposure(cfg, holdings)
-    recon, _ = reconcile(cfg, accounts, holdings)
+    recon, recon_warnings = reconcile(cfg, accounts, holdings)
     holding_decisions = evaluate_holdings(cfg, holdings)
     opportunities = screen_opportunities(cfg, holdings)
     leaps = screen_leaps(cfg)
@@ -145,5 +147,6 @@ def run_decision_engine(
         momentum=momentum,
         throttle=throttle,
         execution=execution,
+        recon_warnings=recon_warnings,
         decision_log=log,
     )
