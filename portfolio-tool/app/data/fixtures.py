@@ -101,13 +101,15 @@ def monthly_return_panel(
     Deterministic for a given seed. Returns ticker -> array of length ``months``.
     """
     rng = np.random.default_rng(seed)
-    ai_factor = rng.normal(0.020, 0.060, months)  # shared AI capex factor
-    mkt_factor = rng.normal(0.008, 0.035, months)  # broad market factor
+    ai_factor = rng.normal(0.020, 0.060, months)  # shared AI capex factor (dominant)
+    mkt_factor = rng.normal(0.008, 0.030, months)  # broad market factor
     out: dict[str, np.ndarray] = {}
     for t in tickers:
         p = params(t)
         idio_rng = np.random.default_rng(_seed_for(t, seed))
-        idio_sd = max(p["vol"] / np.sqrt(12.0) * 0.5, 1e-4)
+        # Modest idiosyncratic share => the AI names move together (high pairwise
+        # correlation, few effective bets) — the concentrated single-factor wager.
+        idio_sd = max(p["vol"] / np.sqrt(12.0) * 0.55, 1e-4)
         drift = p["ret"] / 12.0 - 0.5 * (p["vol"] ** 2) / 12.0
         r = (
             drift

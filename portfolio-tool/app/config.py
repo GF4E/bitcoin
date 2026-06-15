@@ -39,11 +39,18 @@ class TrajectoryConfig(_Cfg):
     n_paths: int = 10_000
     seed: int = 12345
     randomize_seed: bool = False
+    horizon_months: int = 360  # retirement horizon for terminal wealth / ruin
     # Core-book expected_return/volatility and income-sleeve correlation are the
     # load-bearing drivers and live on GoalPlan (the sensitivity sweep perturbs them).
     # These two parameterize the income sleeve's own path inside the MC.
     income_sleeve_expected_return: float = 0.085
     income_sleeve_volatility: float = 0.16
+    income_fraction: float = 0.10  # share of the book in the compounding income sleeve
+    safe_annual: float = 0.045  # de-risked return when defensive
+    defensive_exposure: float = 0.35  # exposure once drawdown depth >= threshold
+    n_grid: int = 13  # threshold sweep resolution
+    sensitivity_n_paths: int = 4000  # reduced paths for the headline grid (speed)
+    sensitivity_n_grid: int = 7
     ruin_probability_max: float = 0.075
     downside_guard_mode: str = "p25_floor"  # p25_floor | cvar
     cvar_alpha: float = 0.10

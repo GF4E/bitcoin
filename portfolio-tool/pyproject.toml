@@ -50,7 +50,7 @@ select = ["E", "F", "I", "UP", "B", "C4", "SIM"]
 ignore = ["E501"]  # line length handled by formatter; long config strings allowed
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["B"]
+"tests/*" = ["B", "C408"]  # dict(...) kwargs helpers read clearly in tests
 
 [tool.ruff.lint.isort]
 known-first-party = ["app"]
