@@ -1,0 +1,38 @@
+# Terminal-wealth plan. 5,000,000 is a MILESTONE the engine reports crossing,
+# NOT the optimization target. Target date is flexible (+/- 1 year).
+# net_worth_total (3.19M) is the denominator for ALL risk/withdrawal/goal math.
+net_worth_total: 3190000
+milestone_wealth: 5000000
+target_date: "2028-06-01"
+target_date_flex_years: 1.0
+horizon_months: 24
+
+# Spending: 12,000/mo total. VA disability covers 4,158/mo tax-free (hard floor,
+# never cut). Portfolio covers the ~7,842/mo gap. Up to 2,000/mo is discretionary
+# and cuttable under the drawdown trigger.
+monthly_expenses: 12000
+va_monthly_floor: 4158
+monthly_gap: 7842
+discretionary_cuttable: 2000
+
+# Load-bearing drivers (LABEL: estimated). The sensitivity sweep perturbs these.
+expected_return_annual: 0.10
+volatility_annual: 0.22
+income_sleeve_correlation: 0.59     # weighted-avg pairwise corr of the concentrated book; estimated
+
+# Monte-Carlo / threshold-solver knobs (loaded as TrajectoryConfig).
+trajectory:
+  n_paths: 10000
+  seed: 12345
+  randomize_seed: false            # a single fixed-seed run is NOT the full probability picture
+  income_sleeve_expected_return: 0.085
+  income_sleeve_volatility: 0.16
+  ruin_probability_max: 0.075
+  downside_guard_mode: p25_floor   # p25_floor | cvar
+  cvar_alpha: 0.10
+  drag_anchor_mode: baseline_cagr  # baseline_cagr | required_cagr
+  drag_ceiling_bps: 50
+  threshold_min: 0.05
+  threshold_max: 0.40
+  threshold_tolerance: 0.0025
+  sensitivity_pcts: [-0.20, -0.10, 0.10, 0.20]

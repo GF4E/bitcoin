@@ -1,0 +1,21 @@
+# Generalized, vol-targeted, crash-protected momentum. Engine = direction/selection;
+# macro throttle = brake/sizing. No ticker logic here beyond sleeve membership.
+lookback_months: 12
+skip_months: 1                     # 12-1: skip the most recent month
+blend_horizons: [1, 3, 12]         # blended-horizon option to reduce single-parameter fragility
+use_blended: true
+vol_target_annual: 0.13            # 12-15% band; NON-NEGOTIABLE for the aggressive sleeve
+trend_filter_sma_days: 200         # absolute-momentum trend filter (crash protection)
+trend_filter_use_tbill_excess: true
+tbill_annual: 0.045
+persistence_months: 2              # act only on persistent threshold breach (tax-aware)
+throttle_indicators:
+  - brent
+  - hormuz_tanker_flow
+  - fedwatch_cut_odds
+  - spx_vs_200dma
+  - vix
+  - cpi_pce
+  - geopolitical_talks
+  - gas
+throttle_persistence_months: 2

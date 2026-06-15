@@ -1,0 +1,7 @@
+# Manual dividend / ex-date overrides for covered-call effective-exit math.
+# Empty by default. Example shape:
+#   KO:
+#     ex_date: "2026-06-12"
+#     amount: 0.485
+#     label: estimated
+overrides: {}

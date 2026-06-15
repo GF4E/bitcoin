@@ -1,0 +1,8 @@
+# Global run settings. Copy to settings.yaml for local overrides (gitignored).
+mode: mock                       # mock | live_readonly
+compliance_mode: standard        # standard | strict (strict => neutral candidate labels at render)
+mask_account_ids: true
+reconciliation_tolerance_pct: 0.01   # warn if Schwab-managed sum vs account totals diverge >1%
+order_execution_enabled: false   # SAFETY: v1 is read-only. Must stay false; tests enforce this.
+cache_dir: .cache
+reports_dir: reports/runs

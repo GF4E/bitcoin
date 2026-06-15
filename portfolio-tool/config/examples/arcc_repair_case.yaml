@@ -1,0 +1,27 @@
+# Example repair case (config fixture ONLY). ARCC appears here and NOWHERE else —
+# no engine contains ARCC values or branches (critical correction #4; enforced by
+# tests/unit/test_arcc_guard.py). This illustrates the covered-call/repair engine's
+# generalized inputs using a single concrete name; swap any ticker freely.
+case:
+  ticker: ARCC
+  account: taxable
+  shares: 2000
+  avg_cost: 21.40
+  price: 19.80                      # underwater => repair scenario
+  sleeve: income_credit
+  role: repair
+  momentum_tag: ballast            # ballast => covered calls permitted
+  accept_called_away: true
+  dividend:
+    ex_date: "2026-06-18"
+    amount: 0.48
+    label: estimated
+  candidate_call:
+    expiration: "2026-09-19"
+    strike: 21.00
+    bid: 0.55
+    ask: 0.65
+    delta: 0.14                     # <=0.15 delta, compliant
+    open_interest: 1800
+    volume: 220
+    iv: 0.28
