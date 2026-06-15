@@ -128,10 +128,12 @@ def run_decision_engine(
 ) -> DecisionBundle:
     exposure = compute_exposure(cfg, holdings)
     recon, recon_warnings = reconcile(cfg, accounts, holdings)
-    holding_decisions = evaluate_holdings(cfg, holdings)
+    covered_calls = screen_covered_calls(cfg, holdings)
+    # the holdings view defers to the screener so it never suggests a call without a
+    # real writable contract.
+    holding_decisions = evaluate_holdings(cfg, holdings, {c.ticker for c in covered_calls})
     opportunities = screen_opportunities(cfg, holdings)
     leaps = screen_leaps(cfg)
-    covered_calls = screen_covered_calls(cfg, holdings)
     momentum = run_momentum(cfg)
     throttle = load_throttle(cfg)
     held = sorted({(h.underlying or h.ticker) for h in holdings if h.market_value})

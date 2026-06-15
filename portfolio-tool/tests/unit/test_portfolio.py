@@ -99,3 +99,22 @@ def test_missing_data_degrades_to_gather_more_data(cfg: AppConfig) -> None:
     assert d.candidate_action is ActionToken.GATHER_MORE_DATA
     assert d.triage is Triage.GATHER_MORE_DATA
     assert d.confidence < 0.5
+
+
+def test_covered_call_suggestions_match_screener(cfg: AppConfig) -> None:
+    from app.options.covered_call_engine import screen_covered_calls
+
+    pf = load_portfolio(cfg)
+    decisions = evaluate_holdings(cfg, pf.holdings)
+    write_call = {d.ticker for d in decisions if d.candidate_action is ActionToken.WRITE_CALL}
+    screener = {c.ticker for c in screen_covered_calls(cfg, pf.holdings)}
+    # the holdings view never suggests a call without a real writable contract
+    assert write_call <= screener
+    # cash and the external (non-Schwab) sleeve are never call-write suggestions
+    not_writable = {
+        h.ticker for h in pf.holdings if h.asset_type is AssetType.CASH or not h.is_schwab_managed
+    }
+    assert not (write_call & not_writable)
+    assert "CASH" not in write_call and "VOO" not in write_call and "SGOV" not in write_call
+    # KO (a real ballast holding with a writable <=0.15-delta strike) is still surfaced
+    assert "KO" in write_call
