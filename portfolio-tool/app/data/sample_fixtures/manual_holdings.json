@@ -1,0 +1,11 @@
+{
+  "as_of": "2026-06-15T16:00:00",
+  "holdings": [
+    {
+      "symbol": "VOO", "name": "S&P 500 Index Sleeve (external)", "asset_type": "ETF",
+      "quantity": 480, "price": 500.00, "average_cost": 360.00,
+      "account": "external_static", "account_name": "External Static Sleeve",
+      "data_source": "manual_static", "subtype": "broad_core"
+    }
+  ]
+}

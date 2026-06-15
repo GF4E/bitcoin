@@ -1,0 +1,81 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "portfolio-tool"
+version = "0.1.0"
+description = "Local, read-only Schwab portfolio + trade-decision support tool (decision support only; places no trades)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "portfolio-tool" }]
+dependencies = [
+    "pydantic>=2.6,<3",
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "scipy>=1.11",
+    "typer>=0.12",
+    "PyYAML>=6.0",
+    "python-dotenv>=1.0",
+    "httpx>=0.27",
+    "tenacity>=8.2",
+    "diskcache>=5.6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=4.1",
+    "ruff>=0.4",
+    "mypy>=1.9",
+    "types-PyYAML>=6.0",
+]
+dashboard = ["streamlit>=1.33"]
+
+[project.scripts]
+portfolio-tool = "app.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["app", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "C4", "SIM"]
+ignore = ["E501"]  # line length handled by formatter; long config strings allowed
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B", "C408"]  # dict(...) kwargs helpers read clearly in tests
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_unused_configs = true
+warn_redundant_casts = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+plugins = ["pydantic.mypy"]
+exclude = ["tests/", "app/dashboard/"]
+
+[[tool.mypy.overrides]]
+module = ["scipy.*", "diskcache.*", "pandas.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --cov=app --cov-report=term-missing --cov-fail-under=85"
+filterwarnings = ["error::DeprecationWarning:app.*"]
+
+[tool.coverage.run]
+branch = true
+omit = ["app/dashboard/*"]
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError", "\\.\\.\\."]

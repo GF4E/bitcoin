@@ -1,0 +1,17 @@
+{
+  "as_of": "2026-06-15T16:00:00",
+  "chains": [
+    {"underlying": "NVDA", "expiration": "2027-12-17", "strike": 160, "put_call": "CALL", "bid": 49.00, "ask": 51.00, "last": 50.00, "delta": 0.86, "gamma": 0.004, "theta": -0.03, "vega": 0.42, "iv": 0.50, "open_interest": 1200, "volume": 300},
+    {"underlying": "NVDA", "expiration": "2027-12-17", "strike": 180, "put_call": "CALL", "bid": 38.00, "ask": 39.50, "last": 38.80, "delta": 0.78, "gamma": 0.005, "theta": -0.03, "vega": 0.46, "iv": 0.48, "open_interest": 2500, "volume": 800},
+    {"underlying": "NVDA", "expiration": "2027-12-17", "strike": 200, "put_call": "CALL", "bid": 30.00, "ask": 31.50, "last": 30.70, "delta": 0.70, "gamma": 0.005, "theta": -0.03, "vega": 0.47, "iv": 0.47, "open_interest": 1800, "volume": 600},
+    {"underlying": "NVDA", "expiration": "2027-12-17", "strike": 220, "put_call": "CALL", "bid": 24.00, "ask": 25.50, "last": 24.60, "delta": 0.62, "gamma": 0.005, "theta": -0.03, "vega": 0.45, "iv": 0.46, "open_interest": 1500, "volume": 400},
+    {"underlying": "NVDA", "expiration": "2027-12-17", "strike": 320, "put_call": "CALL", "bid": 8.00, "ask": 9.50, "last": 8.60, "delta": 0.28, "gamma": 0.003, "theta": -0.02, "vega": 0.30, "iv": 0.55, "open_interest": 120, "volume": 30},
+    {"underlying": "SMH", "expiration": "2027-12-17", "strike": 240, "put_call": "CALL", "bid": 58.00, "ask": 60.00, "last": 59.00, "delta": 0.80, "gamma": 0.004, "theta": -0.04, "vega": 0.55, "iv": 0.40, "open_interest": 900, "volume": 150},
+    {"underlying": "SMH", "expiration": "2027-12-17", "strike": 270, "put_call": "CALL", "bid": 42.00, "ask": 44.00, "last": 43.00, "delta": 0.72, "gamma": 0.004, "theta": -0.04, "vega": 0.58, "iv": 0.39, "open_interest": 1100, "volume": 220},
+    {"underlying": "AVGO", "expiration": "2027-12-17", "strike": 260, "put_call": "CALL", "bid": 64.00, "ask": 67.00, "last": 65.50, "delta": 0.79, "gamma": 0.003, "theta": -0.05, "vega": 0.60, "iv": 0.42, "open_interest": 800, "volume": 130},
+    {"underlying": "NVDA", "expiration": "2026-09-18", "strike": 220, "put_call": "CALL", "bid": 2.00, "ask": 2.30, "last": 2.15, "delta": 0.12, "gamma": 0.01, "theta": -0.05, "vega": 0.20, "iv": 0.46, "open_interest": 1500, "volume": 300},
+    {"underlying": "KO", "expiration": "2026-09-18", "strike": 62.5, "put_call": "CALL", "bid": 1.20, "ask": 1.35, "last": 1.28, "delta": 0.45, "gamma": 0.08, "theta": -0.01, "vega": 0.06, "iv": 0.18, "open_interest": 2200, "volume": 410},
+    {"underlying": "KO", "expiration": "2026-09-18", "strike": 65, "put_call": "CALL", "bid": 0.70, "ask": 0.85, "last": 0.78, "delta": 0.14, "gamma": 0.05, "theta": -0.01, "vega": 0.05, "iv": 0.20, "open_interest": 1800, "volume": 220},
+    {"underlying": "KO", "expiration": "2026-09-18", "strike": 67.5, "put_call": "CALL", "bid": 0.30, "ask": 0.45, "last": 0.37, "delta": 0.06, "gamma": 0.03, "theta": -0.005, "vega": 0.03, "iv": 0.22, "open_interest": 900, "volume": 100}
+  ]
+}

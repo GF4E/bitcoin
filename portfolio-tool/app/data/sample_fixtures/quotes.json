@@ -1,0 +1,27 @@
+{
+  "as_of": "2026-06-15T16:00:00",
+  "quotes": [
+    {"ticker": "NVDA",  "last": 180.00, "bid": 179.95, "ask": 180.05},
+    {"ticker": "AVGO",  "last": 280.00, "bid": 279.90, "ask": 280.10},
+    {"ticker": "SMH",   "last": 270.00, "bid": 269.90, "ask": 270.10},
+    {"ticker": "SOXX",  "last": 255.00, "bid": 254.90, "ask": 255.10},
+    {"ticker": "MSFT",  "last": 460.00, "bid": 459.90, "ask": 460.10},
+    {"ticker": "GOOGL", "last": 185.00, "bid": 184.95, "ask": 185.05},
+    {"ticker": "META",  "last": 720.00, "bid": 719.80, "ask": 720.20},
+    {"ticker": "AMZN",  "last": 215.00, "bid": 214.95, "ask": 215.05},
+    {"ticker": "TSM",   "last": 205.00, "bid": 204.90, "ask": 205.10},
+    {"ticker": "ASML",  "last": 920.00, "bid": 919.50, "ask": 920.50},
+    {"ticker": "MU",    "last": 130.00, "bid": 129.95, "ask": 130.05},
+    {"ticker": "ANET",  "last": 110.00, "bid": 109.95, "ask": 110.05},
+    {"ticker": "VRT",   "last": 115.00, "bid": 114.95, "ask": 115.05},
+    {"ticker": "VST",   "last": 165.00, "bid": 164.95, "ask": 165.05},
+    {"ticker": "PLTR",  "last": 145.00, "bid": 144.95, "ask": 145.05},
+    {"ticker": "ARM",   "last": 175.00, "bid": 174.90, "ask": 175.10},
+    {"ticker": "QQQ",   "last": 520.00, "bid": 519.90, "ask": 520.10},
+    {"ticker": "QQQM",  "last": 205.00, "bid": 204.95, "ask": 205.05},
+    {"ticker": "QQQI",  "last": 52.00,  "bid": 51.97,  "ask": 52.03},
+    {"ticker": "KO",    "last": 62.00,  "bid": 61.98,  "ask": 62.02},
+    {"ticker": "GLD",   "last": 215.00, "bid": 214.95, "ask": 215.05},
+    {"ticker": "SGOV",  "last": 100.00, "bid": 99.99,  "ask": 100.01}
+  ]
+}

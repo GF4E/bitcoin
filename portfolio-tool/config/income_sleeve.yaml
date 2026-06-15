@@ -1,0 +1,12 @@
+# Income-sleeve comparison (OPEN QUESTION re-tested every run). The tool does NOT
+# bake in a conclusion; it computes A-vs-B terminal-wealth delta under identical paths.
+# Capture ratios are NEVER hardcoded — they are regressed from a realized monthly
+# total-return series (live pull, or the labeled sample fixture in mock mode).
+capped_fund: QQQI                  # 0.68% fee, data-driven OTM NDX overwrite, Section 1256, high-ROC
+uncapped_fund: QQQM                # full-upside core
+underlying_index: QQQ
+peer_fallback_fund: QYLD           # longest-record peer (since Dec 2013) for the capped bound
+min_series_months_for_direct: 36   # QQQI <3yr history => substitute peer for the capped bound
+buffer_months: 18                  # 12-24 month T-bill/SGOV spending buffer (Approach B)
+roc_trailing_window_months: 12     # window for the constructive/destructive ROC regime flag
+peer_calibration_source: "sample_fixture (labeled estimated-from-realized-returns; live mode pulls NAV+distributions)"
