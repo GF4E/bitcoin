@@ -39,9 +39,18 @@ def _fit_with_plan(h: Holding) -> float:
     }.get(h.role.value if h.role else "", 0.6)
 
 
-def evaluate_holdings(cfg: AppConfig, holdings: list[Holding]) -> list[HoldingDecision]:
+def evaluate_holdings(
+    cfg: AppConfig, holdings: list[Holding], writable_tickers: set[str] | None = None
+) -> list[HoldingDecision]:
     weights = cfg.scoring_weights.get("holding", {})
     net_worth = cfg.risk_budget.net_worth_total
+    if writable_tickers is None:
+        # Defer to the covered-call screener so the holdings view never suggests a
+        # call on something without a real writable contract (cash, no-options ETFs,
+        # external holdings). Local import avoids a module-load cycle.
+        from app.options.covered_call_engine import screen_covered_calls
+
+        writable_tickers = {c.ticker for c in screen_covered_calls(cfg, holdings)}
     tickers = sorted({(h.underlying or h.ticker) for h in holdings})
     tags = {s.ticker: s for s in compute_signals(cfg, tickers)}
     sleeve_counts: dict[Sleeve, int] = {}
@@ -80,7 +89,7 @@ def evaluate_holdings(cfg: AppConfig, holdings: list[Holding]) -> list[HoldingDe
             for f in h.data_quality_flags
         ]
         action, triage, conf, rationale, monitor, audit = _decide(
-            h, tag, trend_on, pct_nw, total, is_ai
+            h, tag, trend_on, pct_nw, total, is_ai, h.ticker in writable_tickers
         )
 
         out.append(
@@ -123,7 +132,13 @@ def evaluate_holdings(cfg: AppConfig, holdings: list[Holding]) -> list[HoldingDe
 
 
 def _decide(
-    h: Holding, tag: MomentumTag, trend_on: bool, pct_nw: float, score: float, is_ai: bool
+    h: Holding,
+    tag: MomentumTag,
+    trend_on: bool,
+    pct_nw: float,
+    score: float,
+    is_ai: bool,
+    writable: bool,
 ) -> tuple[ActionToken, Triage, float, str, str, str]:
     if "missing_cost_basis" in h.data_quality_flags or "missing_price" in h.data_quality_flags:
         return (
@@ -143,8 +158,10 @@ def _decide(
             "Monthly momentum + 200-DMA trend filter.",
             "Concentration adds to a single-factor AI wager; a momentum crash would hit hardest here.",
         )
-    if tag is MomentumTag.BALLAST and (
-        h.unrealized_gain_loss is None or h.unrealized_gain_loss >= 0
+    if (
+        tag is MomentumTag.BALLAST
+        and writable
+        and (h.unrealized_gain_loss is None or h.unrealized_gain_loss >= 0)
     ):
         return (
             ActionToken.WRITE_CALL,
@@ -162,6 +179,16 @@ def _decide(
             f"Large AI/tech/semi position ({pct_nw:.1%} of NW) without leader-grade momentum; trim to fund clarity.",
             "Concentration banner / momentum rank.",
             "Trimming a future winner is the risk; size the trim, do not exit wholesale.",
+        )
+    if tag is MomentumTag.BALLAST:
+        return (
+            ActionToken.HOLD,
+            Triage.WAIT,
+            0.55,
+            "Ballast holding, but no writable covered-call candidate this run "
+            "(no shares position with a liquid <=0.15-delta strike); hold and monitor.",
+            "Watch for an actionable <=0.15-delta strike or a momentum/trend change.",
+            "Doing nothing forgoes potential income; revisit when a clean strike appears.",
         )
     return (
         ActionToken.HOLD,

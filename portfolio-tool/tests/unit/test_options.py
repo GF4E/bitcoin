@@ -117,3 +117,22 @@ def test_missing_cost_basis_gates_repair_math(cfg: AppConfig) -> None:
     assert cands
     assert all(c.effective_basis_if_not is None for c in cands)  # no repair math without basis
     assert all("missing_cost_basis_repair_gated" in c.data_quality_warnings for c in cands)
+
+
+def test_external_holding_not_eligible_for_covered_calls(cfg: AppConfig) -> None:
+    voo = EquityHolding(
+        account_id="ext",
+        account_name="External",
+        masked_account_id="manual",
+        ticker="VOO",
+        name="S&P sleeve",
+        asset_type=AssetType.EQUITY,
+        quantity=Decimal("480"),
+        price=Decimal("500"),
+        market_value=Decimal("240000"),
+        as_of_datetime=_AS_OF,
+        is_schwab_managed=False,
+        momentum_tag=MomentumTag.BALLAST,
+    )
+    eligible, reason = is_eligible(cfg, voo, MomentumTag.BALLAST)
+    assert eligible is False and reason == "external_not_schwab_managed"

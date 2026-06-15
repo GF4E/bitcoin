@@ -98,6 +98,8 @@ def is_eligible(cfg: AppConfig, holding: Holding, tag: MomentumTag) -> tuple[boo
     )
     if holding.asset_type not in (AssetType.EQUITY, AssetType.FUND):
         return False, "not_a_shares_position"
+    if not holding.is_schwab_managed:
+        return False, "external_not_schwab_managed"
     if (holding.quantity or 0) < 100:
         return False, "fewer_than_100_shares"
     if tag is MomentumTag.LEADER and not allow_leader:
