@@ -6,33 +6,40 @@ VWAP for illiquid contracts — we rely on bid/ask/OI/vol/mid/IV/delta.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import date
 
 from app.config import AppConfig
 from app.data.contracts import OptionChainRow, OptionRight
-from app.data.fixtures import load_sample_option_chains, load_sample_quotes
+from app.data.market_data import MarketData, make_market_data
 from app.money import Money, to_money
 from app.options.payoff import extrinsic_value, intrinsic_value, mid_price, spread_pct
 
 
-def underlying_prices() -> dict[str, Money]:
-    quotes = load_sample_quotes()
+def underlying_prices(market: MarketData, tickers: Iterable[str]) -> dict[str, Money]:
     out: dict[str, Money] = {}
-    for q in quotes.get("quotes", []):
-        if q.get("last") is not None:
-            out[q["ticker"]] = to_money(q["last"])
+    for t in set(tickers):
+        last = market.quote_last(t)
+        if last is not None:
+            out[t] = last
     return out
 
 
-def load_chain_rows(cfg: AppConfig, underlyings: set[str] | None = None) -> list[OptionChainRow]:
-    raw = load_sample_option_chains()
-    prices = underlying_prices()
+def load_chain_rows(
+    cfg: AppConfig, market: MarketData | None = None, underlyings: set[str] | None = None
+) -> list[OptionChainRow]:
+    market = market or make_market_data(cfg)
+    raw = market.raw_option_chain(underlyings)
+    chain_list = raw.get("chains", [])
+    present = {str(c["underlying"]) for c in chain_list}
+    targets = present if underlyings is None else (present & underlyings)
+    prices = underlying_prices(market, targets)
     thresholds = cfg.decision_thresholds.get("leaps", {})
     min_oi = int(thresholds.get("min_open_interest", 500))
     max_spread = float(thresholds.get("max_spread_pct", 0.08))
 
     rows: list[OptionChainRow] = []
-    for c in raw.get("chains", []):
+    for c in chain_list:
         underlying = str(c["underlying"])
         if underlyings is not None and underlying not in underlyings:
             continue

@@ -12,7 +12,7 @@ import numpy as np
 
 from app.config import AppConfig
 from app.data.contracts import ExecutionSignal, VWAPFeatures, VWAPStatus
-from app.data.fixtures import intraday_session
+from app.data.market_data import MarketData, make_market_data
 from app.money import to_money
 
 
@@ -69,8 +69,9 @@ def classify_status(pvp: float, slope: float, zscore: float, above_pct: float) -
     return VWAPStatus.WEAK_WAIT
 
 
-def vwap_signal(cfg: AppConfig, ticker: str) -> ExecutionSignal:
-    feats = compute_vwap_features(ticker, intraday_session(ticker, seed=cfg.trajectory.seed))
+def vwap_signal(cfg: AppConfig, ticker: str, market: MarketData | None = None) -> ExecutionSignal:
+    market = market or make_market_data(cfg)
+    feats = compute_vwap_features(ticker, market.intraday(ticker))
     rationale = (
         f"price_vs_vwap {feats.price_vs_vwap_pct:.2%}, slope {feats.slope:+.3f}, "
         f"above-VWAP {feats.above_vwap_minutes_pct:.0%}"

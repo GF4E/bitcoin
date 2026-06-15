@@ -31,6 +31,7 @@ from app.data.contracts import (
     OptionRight,
     Triage,
 )
+from app.data.market_data import MarketData, make_market_data
 from app.momentum.engine import compute_signals
 from app.money import Money, round_money, to_float, to_money
 from app.options.chains import load_chain_rows
@@ -148,7 +149,10 @@ def _scenario_tree(
     }
 
 
-def screen_covered_calls(cfg: AppConfig, holdings: list[Holding]) -> list[CoveredCallCandidate]:
+def screen_covered_calls(
+    cfg: AppConfig, holdings: list[Holding], market: MarketData | None = None
+) -> list[CoveredCallCandidate]:
+    market = market or make_market_data(cfg)
     cc = cfg.decision_thresholds.get("covered_call", {})
     max_delta = float(cc.get("max_delta", 0.15))
     capture = float(cc.get("buyback_capture_high", 0.70))
@@ -156,8 +160,8 @@ def screen_covered_calls(cfg: AppConfig, holdings: list[Holding]) -> list[Covere
 
     shares_holdings = [h for h in holdings if h.asset_type in (AssetType.EQUITY, AssetType.FUND)]
     underlyings = sorted({h.ticker for h in shares_holdings})
-    tags = {s.ticker: s.momentum_tag for s in compute_signals(cfg, underlyings)}
-    chain = [r for r in load_chain_rows(cfg) if r.call_put is OptionRight.CALL]
+    tags = {s.ticker: s.momentum_tag for s in compute_signals(cfg, underlyings, market)}
+    chain = [r for r in load_chain_rows(cfg, market) if r.call_put is OptionRight.CALL]
 
     out: list[CoveredCallCandidate] = []
     for h in shares_holdings:
