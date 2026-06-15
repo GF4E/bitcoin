@@ -1,0 +1,18 @@
+# Optional: `pip install pre-commit && pre-commit install`. Mirrors `make check`.
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.10
+    hooks:
+      - id: ruff
+        args: [--fix]
+        files: ^portfolio-tool/
+      - id: ruff-format
+        files: ^portfolio-tool/
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest (portfolio-tool)
+        entry: bash -c 'cd portfolio-tool && python -m pytest -q'
+        language: system
+        pass_filenames: false
+        files: ^portfolio-tool/
