@@ -22,6 +22,7 @@ from app.data.contracts import (
     OptionRight,
     Triage,
 )
+from app.data.market_data import MarketData, make_market_data
 from app.momentum.engine import compute_signals
 from app.money import Money, pct_of, round_money, to_float, to_money
 from app.options.chains import load_chain_rows, underlying_prices
@@ -102,17 +103,24 @@ def _liquidity_score(oi: int | None, spread: float | None, t: dict) -> float:
     return max(oi_score * (1.0 - spread_pen), 0.0)
 
 
-def screen_leaps(cfg: AppConfig, contracts: int = 1) -> list[LeapsCandidate]:
+def screen_leaps(
+    cfg: AppConfig, contracts: int = 1, market: MarketData | None = None
+) -> list[LeapsCandidate]:
+    market = market or make_market_data(cfg)
     universe = set(cfg.watchlists.get("leaps_universe", []))
-    rows = [r for r in load_chain_rows(cfg, underlyings=universe) if r.call_put is OptionRight.CALL]
-    prices = underlying_prices()
+    rows = [
+        r
+        for r in load_chain_rows(cfg, market, underlyings=universe)
+        if r.call_put is OptionRight.CALL
+    ]
+    prices = underlying_prices(market, universe)
     rb = cfg.risk_budget
     weights = cfg.scoring_weights.get("leaps", {})
     t = cfg.decision_thresholds.get("leaps", {})
     min_months = float(t.get("min_expiration_months", 18))
     reject_below = float(t.get("reject_delta_below", 0.40))
 
-    tags = {s.ticker: s for s in compute_signals(cfg, sorted(universe))}
+    tags = {s.ticker: s for s in compute_signals(cfg, sorted(universe), market)}
     candidates: list[LeapsCandidate] = []
     for r in rows:
         mte = months_to_expiry(r.expiration, _AS_OF)

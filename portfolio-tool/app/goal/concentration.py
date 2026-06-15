@@ -18,7 +18,7 @@ import numpy as np
 
 from app.config import AppConfig
 from app.data.contracts import ConcentrationBanner, Holding
-from app.data.fixtures import monthly_return_panel
+from app.data.market_data import MarketData, make_market_data
 from app.money import ZERO, msum, pct_of
 
 
@@ -61,8 +61,12 @@ def effective_independent_bets(corr: np.ndarray) -> float:
 
 
 def compute_concentration(
-    holdings: list[Holding], cfg: AppConfig, seed: int = 7
+    holdings: list[Holding],
+    cfg: AppConfig,
+    seed: int | None = None,
+    market: MarketData | None = None,
 ) -> ConcentrationBanner:
+    market = market or make_market_data(cfg, seed=seed)
     net_worth = cfg.risk_budget.net_worth_total
     ai_value = msum(
         h.market_value
@@ -88,7 +92,7 @@ def compute_concentration(
     tickers = [t for t, _ in sleeve]
     weights = np.array([w for _, w in sleeve], dtype=float)
     weights = weights / weights.sum()
-    panel = monthly_return_panel(tickers, months=26, seed=seed)
+    panel = market.monthly_returns(tickers, months=26)
     matrix = np.vstack([panel[t.upper()] for t in tickers])
     corr = np.corrcoef(matrix)
 

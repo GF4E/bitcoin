@@ -28,7 +28,7 @@ from app.data.contracts import (
     IncomeSleeveComparison,
     Severity,
 )
-from app.data.fixtures import load_income_returns
+from app.data.market_data import MarketData, make_market_data
 from app.money import round_money, to_money
 
 
@@ -53,8 +53,9 @@ def derive_capture(fund: np.ndarray, index: np.ndarray) -> tuple[float, float]:
     return up_cap, dn_cap
 
 
-def estimate_capture(cfg: AppConfig) -> CaptureEstimate:
-    cols, date_range = load_income_returns()
+def estimate_capture(cfg: AppConfig, market: MarketData | None = None) -> CaptureEstimate:
+    market = market or make_market_data(cfg)
+    cols, date_range = market.income_return_series()
     isc = cfg.income_sleeve
     index = np.array(cols[isc.underlying_index], dtype=float)
     n = len(index)
@@ -152,8 +153,10 @@ def compare_approaches(
     )
 
 
-def build_income_comparison(cfg: AppConfig) -> IncomeSleeveComparison:
-    cap = estimate_capture(cfg)
+def build_income_comparison(
+    cfg: AppConfig, market: MarketData | None = None
+) -> IncomeSleeveComparison:
+    cap = estimate_capture(cfg, market)
     gp = cfg.goal_plan
     t = cfg.trajectory
     isc = cfg.income_sleeve

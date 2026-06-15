@@ -56,7 +56,7 @@ class SchwabClient:
         return cls(tokens=tokens, cache_dir=cfg.settings.cache_dir)
 
     # -- read-only endpoints (network; exercised only with live credentials) ----
-    def get_accounts_raw(self) -> dict[str, Any]:  # pragma: no cover - requires credentials
+    def get_accounts_raw(self) -> Any:  # pragma: no cover - requires credentials (returns a list)
         return self._cached_get("accounts", "/accounts?fields=positions")
 
     def get_quotes(self, symbols: list[str]) -> dict[str, Any]:  # pragma: no cover
@@ -67,11 +67,21 @@ class SchwabClient:
     def get_option_chain(self, symbol: str) -> dict[str, Any]:  # pragma: no cover
         return self._cached_get(f"chain:{symbol}", f"/chains?symbol={symbol}")
 
-    def get_price_history(self, symbol: str) -> dict[str, Any]:  # pragma: no cover
-        return self._cached_get(f"history:{symbol}", f"/pricehistory?symbol={symbol}")
+    def get_price_history(
+        self,
+        symbol: str,
+        period_type: str = "year",
+        frequency_type: str = "monthly",
+        frequency: int = 1,
+    ) -> dict[str, Any]:  # pragma: no cover
+        q = (
+            f"/pricehistory?symbol={symbol}&periodType={period_type}"
+            f"&frequencyType={frequency_type}&frequency={frequency}"
+        )
+        return self._cached_get(f"history:{symbol}:{frequency_type}", q)
 
     # -- internals --------------------------------------------------------------
-    def _cached_get(self, key: str, path: str) -> dict[str, Any]:  # pragma: no cover - network
+    def _cached_get(self, key: str, path: str) -> Any:  # pragma: no cover - network
         import diskcache  # local import keeps mock mode dependency-light
 
         cache = diskcache.Cache(str(self._cache_dir))
@@ -90,19 +100,19 @@ class SchwabClient:
                 raise StaleCacheError(
                     f"cache for {key} is stale ({age:.0f}s > {self._cache_ttl_s:.0f}s)"
                 ) from None
-            return dict(cached["payload"])
+            return cached["payload"]
 
-    def _http_get(self, path: str) -> dict[str, Any]:  # pragma: no cover - network
+    def _http_get(self, path: str) -> Any:  # pragma: no cover - network
         import httpx
         from tenacity import retry, stop_after_attempt, wait_exponential
 
         @retry(stop=stop_after_attempt(4), wait=wait_exponential(multiplier=1, max=16))
-        def _do() -> dict[str, Any]:
+        def _do() -> Any:
             headers = {"Authorization": f"Bearer {self._tokens.access_token}"}
             resp = httpx.get(f"{self.base_url}{path}", headers=headers, timeout=15.0)
             if resp.status_code >= 400:
                 raise SchwabAPIError(f"GET {path} -> {resp.status_code}")
-            return dict(resp.json())
+            return resp.json()
 
         return _do()
 

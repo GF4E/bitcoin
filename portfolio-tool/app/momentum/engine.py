@@ -9,17 +9,11 @@ concentration. No ticker logic lives here — the universe comes from config.
 
 from __future__ import annotations
 
-from typing import Any
-
 import numpy as np
 
 from app.config import AppConfig, MomentumConfig
 from app.data.contracts import MomentumSignal, MomentumTag
-from app.data.fixtures import daily_closes, monthly_price_bars
-
-
-def _closes(bars: list[dict[str, Any]]) -> np.ndarray:
-    return np.array([float(b["close"]) for b in bars], dtype=float)
+from app.data.market_data import MarketData, make_market_data
 
 
 def time_series_momentum(closes: np.ndarray, lookback: int, skip: int) -> float:
@@ -66,18 +60,19 @@ def run_momentum(cfg: AppConfig) -> list[MomentumSignal]:
     return compute_signals(cfg, universe)
 
 
-def compute_signals(cfg: AppConfig, universe: list[str]) -> list[MomentumSignal]:
+def compute_signals(
+    cfg: AppConfig, universe: list[str], market: MarketData | None = None
+) -> list[MomentumSignal]:
     """Momentum signals + leader/ballast tags for an arbitrary ticker list."""
     mom = cfg.momentum
     if not universe:
         return []
+    market = market or make_market_data(cfg)
 
     raw: dict[str, dict[str, float]] = {}
     for ticker in universe:
-        closes = _closes(monthly_price_bars(ticker, months=26, seed=cfg.trajectory.seed))
-        daily = daily_closes(
-            ticker, days=max(mom.trend_filter_sma_days + 20, 220), seed=cfg.trajectory.seed
-        )
+        closes = market.monthly_closes(ticker, months=26)
+        daily = market.daily_closes(ticker, days=max(mom.trend_filter_sma_days + 20, 220))
         ts = time_series_momentum(closes, mom.lookback_months, mom.skip_months)
         ts_prev = time_series_momentum(closes[:-1], mom.lookback_months, mom.skip_months)
         raw[ticker] = {

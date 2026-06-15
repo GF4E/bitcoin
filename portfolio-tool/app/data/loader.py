@@ -10,7 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from app.config import AppConfig
-from app.data.contracts import Account, Holding
+from app.data.contracts import Account, DataLabel, Holding, Severity
 from app.data.fixtures import load_sample_accounts, load_sample_manual
 from app.data.normalize import normalize_accounts, normalize_manual
 from app.data.quality import QualityLedger
@@ -34,10 +34,19 @@ class Portfolio:
 def load_portfolio(cfg: AppConfig) -> Portfolio:
     ledger = QualityLedger()
     if cfg.settings.mode == "live_readonly":  # pragma: no cover - requires credentials
-        from app.schwab_client.client import SchwabClient  # type: ignore[import-not-found]
+        from app.schwab_client.client import SchwabClient
+        from app.schwab_client.parse import parse_accounts
 
         client = SchwabClient.from_config(cfg)
-        accounts, schwab = normalize_accounts(client.get_accounts_raw(), cfg, ledger)
+        raw = parse_accounts(client.get_accounts_raw())  # Schwab JSON -> normalized input
+        accounts, schwab = normalize_accounts(raw, cfg, ledger)
+        ledger.add(
+            "live_data_layer_unverified",
+            "Live data-pull layer is implemented against Schwab's documented API and is "
+            "unverified end-to-end; sanity-check outputs against your account.",
+            severity=Severity.WARN,
+            label=DataLabel.ASSUMED,
+        )
     else:
         accounts, schwab = normalize_accounts(load_sample_accounts(), cfg, ledger)
     manual = normalize_manual(load_sample_manual(), cfg, ledger)
