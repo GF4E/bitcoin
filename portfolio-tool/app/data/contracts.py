@@ -153,6 +153,7 @@ class Account(_Base):
     masked_account_id: str
     account_type: str | None = None
     is_schwab_managed: bool = True
+    reported_total: MoneyField | None = None  # account-reported balance, for reconciliation
     data_source: str = "mock"
 
 

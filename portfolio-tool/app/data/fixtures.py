@@ -19,6 +19,7 @@ import json
 from datetime import date, datetime
 from functools import cache
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 
@@ -121,7 +122,7 @@ def monthly_return_panel(
     return out
 
 
-def monthly_price_bars(ticker: str, months: int = 26, seed: int = 7) -> list[dict[str, object]]:
+def monthly_price_bars(ticker: str, months: int = 26, seed: int = 7) -> list[dict[str, Any]]:
     """Monthly OHLC-ish bars anchored to the current price. Plain dicts (PriceBar built upstream)."""
     rets = monthly_return_panel([ticker], months=months, seed=seed)[ticker.upper()]
     closes = np.exp(np.cumsum(rets))
@@ -179,25 +180,29 @@ def _add_months(d: date, delta: int) -> date:
 # Sample-fixture loaders (JSON/CSV)
 # --------------------------------------------------------------------------- #
 @cache
-def _load_json(name: str) -> dict[str, object]:
+def _load_json(name: str) -> dict[str, Any]:
     with (SAMPLE_DIR / name).open("r", encoding="utf-8") as fh:
         return json.load(fh)
 
 
-def load_sample_accounts() -> dict[str, object]:
+def load_sample_accounts() -> dict[str, Any]:
     return _load_json("schwab_accounts.json")
 
 
-def load_sample_manual() -> dict[str, object]:
+def load_sample_manual() -> dict[str, Any]:
     return _load_json("manual_holdings.json")
 
 
-def load_sample_quotes() -> dict[str, object]:
+def load_sample_quotes() -> dict[str, Any]:
     return _load_json("quotes.json")
 
 
-def load_sample_option_chains() -> dict[str, object]:
+def load_sample_option_chains() -> dict[str, Any]:
     return _load_json("option_chains.json")
+
+
+def load_macro_state() -> dict[str, Any]:
+    return _load_json("macro_state.json")
 
 
 def load_income_returns() -> tuple[dict[str, list[float]], str]:

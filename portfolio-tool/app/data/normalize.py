@@ -170,6 +170,11 @@ def normalize_accounts(
             masked_account_id=mask_account(number),
             account_type=acc_raw.get("account_type"),
             is_schwab_managed=bool(acc_raw.get("is_schwab_managed", True)),
+            reported_total=(
+                to_money(acc_raw["reported_total"])
+                if acc_raw.get("reported_total") is not None
+                else None
+            ),
             data_source=str(raw.get("data_source", "mock")),
         )
         accounts.append(account)

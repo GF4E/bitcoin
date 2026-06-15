@@ -108,6 +108,9 @@ class AppConfig(_Cfg):
     sleeve_classifications: dict[str, dict[str, Any]]
     scoring_weights: dict[str, dict[str, float]]
     decision_thresholds: dict[str, Any]
+    watchlists: dict[str, list[str]]
+    holding_overrides: dict[str, dict[str, Any]]
+    dividend_overrides: dict[str, dict[str, Any]]
     config_dir: str
 
     def sleeve_for(self, ticker: str) -> Sleeve:
@@ -172,6 +175,9 @@ def load_config(cdir: Path | None = None) -> AppConfig:
         sleeve_classifications=_load_yaml(cdir / "sleeve_classifications.yaml"),
         scoring_weights=_load_yaml(cdir / "scoring_weights.yaml"),
         decision_thresholds=_load_yaml(cdir / "decision_thresholds.yaml"),
+        watchlists=_load_yaml(cdir / "watchlists.yaml"),
+        holding_overrides=(_load_yaml(cdir / "holding_overrides.yaml").get("overrides") or {}),
+        dividend_overrides=(_load_yaml(cdir / "dividend_overrides.yaml").get("overrides") or {}),
         config_dir=str(cdir),
     )
 

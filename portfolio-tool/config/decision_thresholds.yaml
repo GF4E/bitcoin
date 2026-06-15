@@ -20,7 +20,9 @@ covered_call:
   allow_below_basis_exit: false
   allow_leader_override: false         # refuse to surface calls on momentum leaders
 momentum:
-  breach_threshold: 0.0                # 12-1 excess return breach level
+  breach_threshold: 0.0                # 12-1 excess return breach level (action only on persistent breach)
+  leader_threshold: 0.15               # ts 12-1 above this + positive trend => leader (let it run)
+  ballast_threshold: 0.05              # ts 12-1 at/below this, or trend off => ballast (callable)
   conflict_rule: brake_size_engine_selection
 reconciliation:
   tolerance_pct: 0.01
