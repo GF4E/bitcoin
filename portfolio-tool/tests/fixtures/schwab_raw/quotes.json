@@ -1,5 +1,0 @@
-{
-  "NVDA": { "assetMainType": "EQUITY", "symbol": "NVDA",
-            "quote": { "lastPrice": 180.05, "bidPrice": 179.95, "askPrice": 180.15 } },
-  "KO": { "assetMainType": "EQUITY", "symbol": "KO", "quote": { "lastPrice": 62.0 } }
-}

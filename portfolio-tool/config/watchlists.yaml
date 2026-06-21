@@ -1,8 +1,0 @@
-# Configurable universes for the opportunity screener and LEAPS screener.
-# No ticker logic lives in engines — only here.
-leaps_universe:
-  [QQQ, QQQM, SMH, SOXX, AVGO, VRT, VST, TSM, NVDA, MSFT, AMZN, GOOGL, META, ANET, PLTR, ARM, ASML, MU]
-opportunity_universe:
-  [SMH, SOXX, AVGO, TSM, ASML, MU, ANET, VRT, VST, PLTR, ARM, GOOGL, META, AMZN]
-momentum_universe:
-  [QQQM, SMH, NVDA, AVGO, MSFT, VRT, VST, GOOGL, META, AMZN, TSM, ASML, ANET, PLTR]

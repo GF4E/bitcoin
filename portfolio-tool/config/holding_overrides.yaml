@@ -1,8 +1,0 @@
-# Manual per-holding overrides (role, sleeve, momentum_tag, cost basis, accept-called-away).
-# Empty by default. Example shape:
-#   NVDA:
-#     role: growth
-#     accept_called_away: false        # protects momentum leaders from covered-call surfacing
-#   KO:
-#     accept_called_away: true
-overrides: {}
